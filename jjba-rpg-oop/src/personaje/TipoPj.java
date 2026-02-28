@@ -1,5 +1,5 @@
 package personaje;
 
-public enum tipoPj {
+public enum TipoPj {
 
 }

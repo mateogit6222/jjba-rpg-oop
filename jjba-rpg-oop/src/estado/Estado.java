@@ -1,10 +1,10 @@
 package estado;
 
 public abstract class Estado {
-String nombre;
-int turnosRestantes;
-int potenciaPorTurno;
-boolean apilable;
-//origen
+	protected String nombre;
+	protected int turnosRestantes;
+	protected int potenciaPorTurno;
+	protected boolean apilable;
+	//protected origen
 
 }

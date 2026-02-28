@@ -1,5 +1,5 @@
 package movimiento;
 
-public enum tipoMov {
+public enum BlancoMov {
 
 }
