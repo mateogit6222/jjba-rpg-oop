@@ -52,6 +52,12 @@ public abstract class Personaje {
 		this.movimientos = new ArrayList();
 	}
 
+	// Getters Personaje
+	
+	public int getEnergiaActual() {
+		return energiaActual;
+	}
+
 	// Funciones Personaje
 
 	public boolean estaVivo() {
@@ -68,8 +74,8 @@ public abstract class Personaje {
 				+ "vidaMax: " + this.vidaMax + "/n" + "vidaActual: " + this.vidaActual + "/n" + "energiaMax: "
 				+ this.energiaMax + "/n" + "energiaActual: " + this.energiaActual + "/n" + "ataque: " + this.ataque
 				+ "/n" + "defensa: " + this.defensa + "/n" + "ataqueEspecial: " + this.ataqueEspecial + "/n"
-				+ "defensaEspecial: " + this.defensaEspecial + "/n" + "velocidad: " + this.velocidad + "/n"
-				+ "estadosActivos: " + this.estadosActivos + "/n" + "item: " + this.item);
+				+ "defensaEspecial: " + this.defensaEspecial + "/n" + "velocidad: " + this.velocidad + "/n" + "item: "
+				+ this.item);
 
 	}
 
