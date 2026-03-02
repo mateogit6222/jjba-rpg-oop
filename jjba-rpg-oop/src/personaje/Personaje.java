@@ -63,10 +63,6 @@ public abstract class Personaje {
 
 	}
 
-	public void elegirAccion() {
-
-	}
-
 	public void infoPersonaje() {
 		System.out.println("\t Características /n" + "nombre: " + this.nombre + "/n" + "tipoPj: " + this.tipopj + "/n"
 				+ "vidaMax: " + this.vidaMax + "/n" + "vidaActual: " + this.vidaActual + "/n" + "energiaMax: "
@@ -77,71 +73,28 @@ public abstract class Personaje {
 
 	}
 
-	public void realizarMovimiento(Movimiento movimiento) {
-		// gastarRecurso
-		// calcularDanio
-		// curar
-		// aplicarEstado
+	public void gastarEnergia() {
 
-		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
-
-			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
-
-			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
-
-			}
-
-		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
-
-			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
-
-			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
-
-			}
-
-		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
-
-			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
-
-			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
-
-			} else if (movimiento.getBlancoMov().equals(BlancoMov.USUARIO)) {
-
-			}
-
-		}
 	}
 
-	public void recibirMovimiento(Movimiento movimiento) {
-		// recibirDanio
-		// curar
-		// procesarEstados
+	public void calcularDanio() {
 
-		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
+	}
 
-			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+	public void recibirDanio() {
 
-			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+	}
 
-			}
+	public void curar() {
 
-		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
+	}
 
-			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+	public void aplicarEstado() {
 
-			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+	}
 
-			}
+	public void procesarEstados() {
 
-		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
-
-			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
-
-			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
-
-			}
-
-		}
 	}
 
 }

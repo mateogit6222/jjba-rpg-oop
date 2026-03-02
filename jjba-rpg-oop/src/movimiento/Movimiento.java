@@ -33,12 +33,34 @@ public abstract class Movimiento {
 
 	//Getters Movimiento
 	
+	
+	
 	public TipoMov getTipoMov() {
 		return tipoMov;
 	}
 
 	public BlancoMov getBlancoMov() {
 		return blancoMov;
+	}
+
+	public int getPotencia() {
+		return potencia;
+	}
+
+	public double getPrecision() {
+		return precision;
+	}
+
+	public int getPp() {
+		return pp;
+	}
+
+	public int getCosteEnergia() {
+		return costeEnergia;
+	}
+
+	public int getPrioridad() {
+		return prioridad;
 	}
 	
 }
