@@ -1,6 +1,7 @@
 package personaje;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import estado.Estado;
 import item.Item;
@@ -23,9 +24,9 @@ public abstract class Personaje {
 	protected int velocidad;
 	protected boolean estaProtegido;
 	// protected boolean estaVivo;
-	protected ArrayList<Estado> estadosActivos;
+	protected List<Estado> estadosActivos;
 	protected Item item;
-	protected ArrayList<Movimiento> movimientos;
+	protected List<Movimiento> movimientos;
 
 	// Constructor Personaje
 
@@ -61,8 +62,46 @@ public abstract class Personaje {
 
 	}
 
-	public void recibirMovimiento(Movimiento movimiento) {
+	public void elegirAccion() {
+
+	}
+
+	public void infoPersonaje() {
+		System.out.println("\t Características /n" + "nombre: " + this.nombre + "/n" + "tipoPj: " + this.tipopj + "/n"
+				+ "vidaMax: " + this.vidaMax + "/n" + "vidaActual: " + this.vidaActual + "/n" + "energiaMax: "
+				+ this.energiaMax + "/n" + "energiaActual: " + this.energiaActual + "/n" + "ataque: " + this.ataque
+				+ "/n" + "defensa: " + this.defensa + "/n" + "ataqueEspecial: " + this.ataqueEspecial + "/n"
+				+ "defensaEspecial: " + this.defensaEspecial + "/n" + "velocidad: " + this.velocidad + "/n"
+				+ "estadosActivos: " + this.estadosActivos + "/n" + "item: " + this.item);
+
+	}
+
+	public void realizarMovimiento(Movimiento movimiento) {
+		//gastarRecurso
+		//calcularDanio
+		//curar
+		//aplicarEstado
+
 		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
+
+		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
+
+		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
+
+		}
+	}
+
+	public void recibirMovimiento(Movimiento movimiento) {
+		//recibirDanio
+		//curar
+		//procesarEstados
+
+		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
+
+		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
+
+		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
+
 		}
 	}
 

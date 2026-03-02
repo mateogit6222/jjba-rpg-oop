@@ -5,17 +5,26 @@ package item;
 public abstract class Item {
 	protected String nombre;
 	protected TipoItem tipoItem;
-	protected int danioBase;
 	protected int modificador;
+	protected String efecto;
 
-	//Constructor Item
+	// Constructor Item
 
-	public Item(String nombre, TipoItem tipoItem, int danioBase, int modificador) {
+	public Item(String nombre, TipoItem tipoItem, int modificador, String efecto) {
 		super();
 		this.nombre = nombre;
 		this.tipoItem = tipoItem;
-		this.danioBase = danioBase;
 		this.modificador = modificador;
+		this.efecto = efecto;
 	}
+
+	// Funciones Item
+
+	public void infoItem() {
+		System.out.println("\t Características /n" + "nombre: " + this.nombre + "/n" + "tipoItem: " + this.tipoItem + "/n"
+				+ "efecto: " + this.efecto);
+	}
+	
+	//Aplicar Item
 
 }
