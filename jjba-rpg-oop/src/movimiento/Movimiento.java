@@ -36,5 +36,9 @@ public abstract class Movimiento {
 	public TipoMov getTipoMov() {
 		return tipoMov;
 	}
+
+	public BlancoMov getBlancoMov() {
+		return blancoMov;
+	}
 	
 }

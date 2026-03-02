@@ -5,6 +5,7 @@ import java.util.List;
 
 import estado.Estado;
 import item.Item;
+import movimiento.BlancoMov;
 import movimiento.Movimiento;
 import movimiento.TipoMov;
 
@@ -77,30 +78,68 @@ public abstract class Personaje {
 	}
 
 	public void realizarMovimiento(Movimiento movimiento) {
-		//gastarRecurso
-		//calcularDanio
-		//curar
-		//aplicarEstado
+		// gastarRecurso
+		// calcularDanio
+		// curar
+		// aplicarEstado
 
 		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
 
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			}
+
 		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
 
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			}
+
 		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
+
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.USUARIO)) {
+
+			}
 
 		}
 	}
 
 	public void recibirMovimiento(Movimiento movimiento) {
-		//recibirDanio
-		//curar
-		//procesarEstados
+		// recibirDanio
+		// curar
+		// procesarEstados
 
 		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
 
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			}
+
 		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
 
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			}
+
 		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
+
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			}
 
 		}
 	}
