@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import estado.Estado;
 import item.Item;
 import movimiento.Movimiento;
+import movimiento.TipoMov;
 
 //Atributos Personaje
 
@@ -26,7 +27,7 @@ public abstract class Personaje {
 	protected Item item;
 	protected ArrayList<Movimiento> movimientos;
 
-	//Constructor Personaje
+	// Constructor Personaje
 
 	public Personaje(String nombre, TipoPj tipopj, int vidaMax, int vidaActual, int energiaMax, int energiaActual,
 			int ataque, int defensa, int ataqueEspecial, int defensaEspecial, int velocidad, boolean estaProtegido,
@@ -48,7 +49,21 @@ public abstract class Personaje {
 		this.estadosActivos = new ArrayList();
 		this.movimientos = new ArrayList();
 	}
-	
-	
-	
+
+	// Funciones Personaje
+
+	public boolean estaVivo() {
+		/*
+		 * if (vidaActual > 0) { return true; } else { return false; }
+		 */
+
+		return vidaActual > 0 ? true : false; // Andrés no preguntes que me lo dijiste tú
+
+	}
+
+	public void recibirMovimiento(Movimiento movimiento) {
+		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
+		}
+	}
+
 }

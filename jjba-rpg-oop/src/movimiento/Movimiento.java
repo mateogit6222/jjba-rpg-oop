@@ -31,4 +31,10 @@ public abstract class Movimiento {
 		this.efecto = efecto;
 	}
 
+	//Getters Movimiento
+	
+	public TipoMov getTipoMov() {
+		return tipoMov;
+	}
+	
 }
