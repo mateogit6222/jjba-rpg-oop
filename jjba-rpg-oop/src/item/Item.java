@@ -11,7 +11,6 @@ public abstract class Item {
 	// Constructor Item
 
 	public Item(String nombre, TipoItem tipoItem, int modificador, String efecto) {
-		super();
 		this.nombre = nombre;
 		this.tipoItem = tipoItem;
 		this.modificador = modificador;
@@ -21,10 +20,10 @@ public abstract class Item {
 	// Funciones Item
 
 	public void infoItem() {
-		System.out.println("\t Características /n" + "nombre: " + this.nombre + "/n" + "tipoItem: " + this.tipoItem + "/n"
-				+ "efecto: " + this.efecto);
+		System.out.println("\t Características /n" + "nombre: " + this.nombre + "/n" + "tipoItem: " + this.tipoItem
+				+ "/n" + "efecto: " + this.efecto);
 	}
-	
-	//Aplicar Item
+
+	// Aplicar Item
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import estado.Estado;
+import estado.TipoEstado;
 import item.Item;
 import movimiento.BlancoMov;
 import movimiento.Movimiento;
@@ -53,9 +54,9 @@ public abstract class Personaje {
 	}
 
 	// Getters Personaje
-	
+
 	public int getEnergiaActual() {
-		return energiaActual;
+		return this.energiaActual;
 	}
 
 	// Funciones Personaje
@@ -65,8 +66,11 @@ public abstract class Personaje {
 		 * if (vidaActual > 0) { return true; } else { return false; }
 		 */
 
-		return vidaActual > 0 ? true : false; // Andrés no preguntes que me lo dijiste tú
+		return this.vidaActual > 0 ? true : false; // Andrés no preguntes que me lo dijiste tú
 
+	}
+
+	public void elegirAccion() {
 	}
 
 	public void infoPersonaje() {
@@ -79,27 +83,49 @@ public abstract class Personaje {
 
 	}
 
-	public void gastarEnergia() {
+	public void aplicarItem(Item item) {
 
 	}
 
-	public void calcularDanio() {
-
+	public boolean gastarEnergia(int coste) {
+		if (this.energiaActual >= coste) {
+			this.energiaActual = this.energiaActual - coste;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	public void recibirDanio() {
+	// *public int calcularDanio() {
 
+	// }
+
+	public void recibirDanio(int cantidad) {
+		if (this.vidaActual > cantidad) {
+			this.vidaActual = this.vidaActual - cantidad;
+		} else {
+			this.vidaActual = 0;
+		}
 	}
 
-	public void curar() {
-
+	public void curar(int cantidad) {
+		if (this.vidaActual + cantidad <= this.vidaMax) {
+			this.vidaActual = this.vidaActual + cantidad;
+		}
 	}
 
-	public void aplicarEstado() {
-
+	public void aplicarEstado(Estado estado) {
+		if (estadosActivos.size() < 1) {
+			estadosActivos.add(estado);
+		} else if (estadosActivos.size() <= 1 && estado.isApilable()) {
+			estadosActivos.add(estado);
+		}
 	}
 
-	public void procesarEstados() {
+	public void procesarEstados(Estado estado) {
+		if (estadosActivos.contains(estado.getTipoEstado().equals(TipoEstado.DOT))) {
+			
+		}
 
 	}
 

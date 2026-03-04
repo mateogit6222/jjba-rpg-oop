@@ -20,7 +20,6 @@ public abstract class Movimiento {
 
 	public Movimiento(String nombre, BlancoMov blancoMov, TipoMov tipoMov, int potencia, double precision, int pp,
 			int costeEnergia, String efectoSecundario, int prioridad, String efecto) {
-		super();
 		this.nombre = nombre;
 		this.blancoMov = blancoMov;
 		this.tipoMov = tipoMov;
@@ -65,17 +64,21 @@ public abstract class Movimiento {
 
 	// Funciones Movimiento
 
-	public boolean puedeUsarse(Personaje personaje) {
+	public boolean puedeUsarseMov(Personaje caster) {
 
-		if (pp > 0 && personaje.getEnergiaActual() > 0) {
+		if (this.pp > 0 && caster.getEnergiaActual() > 0) {
 			return true;
-		} else if (pp < 0) {
+		} else if (this.pp < 0) {
 			return false;
-		} else if (personaje.getEnergiaActual() < 0) {
+		} else if (caster.getEnergiaActual() < 0) {
 			return false;
 		} else {
 			return false;
 		}
+	}
+
+	public void usarMov(Personaje caster, Personaje objetivo) {
+
 	}
 
 }
