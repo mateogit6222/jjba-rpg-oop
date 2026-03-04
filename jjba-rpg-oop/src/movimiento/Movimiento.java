@@ -75,10 +75,11 @@ public abstract class Movimiento {
 		} else {
 			return false;
 		}
+		//Verifica que el personaje tiene pp y energiaActual suficiente.
 	}
 
 	public void usarMov(Personaje caster, Personaje objetivo) {
-
+		
 	}
 
 }
