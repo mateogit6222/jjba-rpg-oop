@@ -2,9 +2,13 @@ package personaje;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import estado.Estado;
+import estado.TipoEstado;
 import item.Item;
+import item.TipoItem;
+import movimiento.BlancoMov;
 import movimiento.Movimiento;
 import movimiento.TipoMov;
 
@@ -51,19 +55,24 @@ public abstract class Personaje {
 		this.movimientos = new ArrayList();
 	}
 
+	// Getters Personaje
+
+	public int getEnergiaActual() {
+		return this.energiaActual;
+	}
+
 	// Funciones Personaje
 
 	public boolean estaVivo() {
 		/*
-		 * if (vidaActual > 0) { return true; } else { return false; }
+		 * if (this.vidaActual > 0) { return true; } else { return false; }
 		 */
 
-		return vidaActual > 0 ? true : false; // Andrés no preguntes que me lo dijiste tú
-
+		return this.vidaActual > 0 ? true : false; // Andrés no preguntes que me lo dijiste tú
+		// Devuelve si el personaje puede actuar.
 	}
 
 	public void elegirAccion() {
-
 	}
 
 	public void infoPersonaje() {
@@ -71,38 +80,130 @@ public abstract class Personaje {
 				+ "vidaMax: " + this.vidaMax + "/n" + "vidaActual: " + this.vidaActual + "/n" + "energiaMax: "
 				+ this.energiaMax + "/n" + "energiaActual: " + this.energiaActual + "/n" + "ataque: " + this.ataque
 				+ "/n" + "defensa: " + this.defensa + "/n" + "ataqueEspecial: " + this.ataqueEspecial + "/n"
-				+ "defensaEspecial: " + this.defensaEspecial + "/n" + "velocidad: " + this.velocidad + "/n"
-				+ "estadosActivos: " + this.estadosActivos + "/n" + "item: " + this.item);
-
+				+ "defensaEspecial: " + this.defensaEspecial + "/n" + "velocidad: " + this.velocidad + "/n" + "item: "
+				+ this.item);
+		// Devuelve información del personaje.
 	}
 
-	public void realizarMovimiento(Movimiento movimiento) {
-		//gastarRecurso
-		//calcularDanio
-		//curar
-		//aplicarEstado
+	public void aplicarItem(Item item) {
+		if (this.item.equals(item.getTipoItem().equals(TipoItem.STAND_CA.STAND_LA.ITEM_POT))) {
+			this.vidaMax = this.vidaMax + item.getPotenciador();
+			this.vidaActual = this.vidaActual + item.getPotenciador();
+			this.energiaMax = this.energiaMax + item.getPotenciador();
+			this.energiaActual = this.energiaActual + item.getPotenciador();
+			this.ataque = this.ataque + item.getPotenciador();
+			this.defensa = this.defensa + item.getPotenciador();
+			this.ataqueEspecial = this.ataqueEspecial + item.getPotenciador();
+			this.defensaEspecial = this.defensaEspecial + item.getPotenciador();
+			this.velocidad = this.velocidad + item.getPotenciador();
+		}
+		// Aplica el efecto correspondiete según el tipo de item.
+	}
+
+	// public boolean gastarEnergia(int coste) {
+	// if (this.energiaActual >= coste) {
+	// this.energiaActual = this.energiaActual - coste;
+	// return true;
+	// } else {
+	// return false;
+	// }
+	// Comprueba y descuenta energía si es posible.
+	// }
+
+	private int calcularDanio(Movimiento movimiento) {
+
+		Random random = new Random();
+
+		int danioBase;
+		int danioFinal;
+
+		boolean esCritico = random.nextDouble() < 0.04167;
+		int multiplicador = esCritico ? 3 / 2 : 1;
+
+		int rollDanio = random.nextInt(16 / 100) + 85 / 100;
 
 		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
 
+			danioBase = ((((2 * 50) / 5 + 2) * movimiento.getPotencia() * ataque / defensa) / 50 + 2) * multiplicador;
+
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+				danioFinal = danioBase * rollDanio;
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+				danioFinal = ((danioBase * 3072) / 4096) * rollDanio;
+
+			}
+
 		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
+
+			danioBase = ((((2 * 50) / 5 + 2) * movimiento.getPotencia() * ataqueEspecial / defensaEspecial) / 50 + 2)
+					* multiplicador;
+
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+				danioFinal = danioBase * rollDanio;
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+				danioFinal = ((danioBase * 3072) / 4096) * rollDanio;
+
+			}
 
 		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
 
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+				
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.USUARIO)) {
+
+			}
+
 		}
+		return calcularDanio(movimiento);
+
 	}
 
-	public void recibirMovimiento(Movimiento movimiento) {
-		//recibirDanio
-		//curar
-		//procesarEstados
-
-		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
-
-		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
-
-		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
-
+	public void recibirDanio(int cantidad) {
+		if (this.vidaActual > cantidad) {
+			this.vidaActual = this.vidaActual - cantidad;
+		} else {
+			this.vidaActual = 0;
 		}
+		// Actualiza vida y gestiona muerte.
+	}
+
+	public void curar(int cantidad) {
+		if (this.vidaActual + cantidad <= this.vidaMax) {
+			this.vidaActual = this.vidaActual + cantidad;
+		}
+		// Suma vida sin superar vidaMax.
+	}
+
+	public void aplicarEstado(Estado estado) {
+		if (this.estadosActivos.size() < 1) {
+			this.estadosActivos.add(estado);
+		} else if (this.estadosActivos.size() <= 1 && estado.isApilable()) {
+			this.estadosActivos.add(estado);
+		}
+		// Añade un estado a la colección aplicando reglas de acumulación.
+	}
+
+	public void procesarEstados() {
+		for (Estado e : estadosActivos) {
+			if (e.getTipoEstado().equals(TipoEstado.DOT)) {
+				this.recibirDanio(e.getPotenciaPorTurno());
+			}
+			if (e.getTipoEstado().equals(TipoEstado.HOT)) {
+				this.curar(e.getPotenciaPorTurno());
+			}
+			if (e.getTipoEstado().equals(TipoEstado.MODIFICADOR)) {
+
+			}
+		}
+		// Recorre estados activos, aplica su efecto por turno (y elimina expirados).
 	}
 
 }

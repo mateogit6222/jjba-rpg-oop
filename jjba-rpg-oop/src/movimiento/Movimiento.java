@@ -1,5 +1,7 @@
 package movimiento;
 
+import personaje.Personaje;
+
 //Atributos Movimiento
 
 public abstract class Movimiento {
@@ -14,11 +16,10 @@ public abstract class Movimiento {
 	protected int prioridad;
 	protected String efecto;
 
-	//Constructor Movimiento
+	// Constructor Movimiento
 
 	public Movimiento(String nombre, BlancoMov blancoMov, TipoMov tipoMov, int potencia, double precision, int pp,
 			int costeEnergia, String efectoSecundario, int prioridad, String efecto) {
-		super();
 		this.nombre = nombre;
 		this.blancoMov = blancoMov;
 		this.tipoMov = tipoMov;
@@ -31,10 +32,54 @@ public abstract class Movimiento {
 		this.efecto = efecto;
 	}
 
-	//Getters Movimiento
-	
+	// Getters Movimiento
+
 	public TipoMov getTipoMov() {
 		return tipoMov;
 	}
-	
+
+	public BlancoMov getBlancoMov() {
+		return blancoMov;
+	}
+
+	public int getPotencia() {
+		return potencia;
+	}
+
+	public double getPrecision() {
+		return precision;
+	}
+
+	public int getPp() {
+		return pp;
+	}
+
+	public int getCosteEnergia() {
+		return costeEnergia;
+	}
+
+	public int getPrioridad() {
+		return prioridad;
+	}
+
+	// Funciones Movimiento
+
+	public boolean puedeUsarseMov(Personaje caster) {
+
+		if (this.pp > 0 && caster.getEnergiaActual() > 0) {
+			return true;
+		} else if (this.pp < 0) {
+			return false;
+		} else if (caster.getEnergiaActual() < 0) {
+			return false;
+		} else {
+			return false;
+		}
+		// Verifica que el personaje tiene pp y energiaActual suficiente.
+	}
+
+	public void usarMov(Personaje objetivo) {
+
+	}
+
 }
