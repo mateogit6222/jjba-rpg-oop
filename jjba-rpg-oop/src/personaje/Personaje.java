@@ -2,6 +2,7 @@ package personaje;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import estado.Estado;
 import estado.TipoEstado;
@@ -99,19 +100,71 @@ public abstract class Personaje {
 		// Aplica el efecto correspondiete según el tipo de item.
 	}
 
-	public boolean gastarEnergia(int coste) {
-		if (this.energiaActual >= coste) {
-			this.energiaActual = this.energiaActual - coste;
-			return true;
-		} else {
-			return false;
-		}
-		// Comprueba y descuenta energía si es posible.
-	}
-
-	// *public int calcularDanio() {
-
+	// public boolean gastarEnergia(int coste) {
+	// if (this.energiaActual >= coste) {
+	// this.energiaActual = this.energiaActual - coste;
+	// return true;
+	// } else {
+	// return false;
 	// }
+	// Comprueba y descuenta energía si es posible.
+	// }
+
+	private int calcularDanio(Movimiento movimiento) {
+
+		Random random = new Random();
+
+		int danioBase;
+		int danioFinal;
+
+		boolean esCritico = random.nextDouble() < 0.04167;
+		int multiplicador = esCritico ? 3 / 2 : 1;
+
+		int rollDanio = random.nextInt(16 / 100) + 85 / 100;
+
+		if (movimiento.getTipoMov().equals(TipoMov.FISICO)) {
+
+			danioBase = ((((2 * 50) / 5 + 2) * movimiento.getPotencia() * ataque / defensa) / 50 + 2) * multiplicador;
+
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+				danioFinal = danioBase * rollDanio;
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+				danioFinal = ((danioBase * 3072) / 4096) * rollDanio;
+
+			}
+
+		} else if (movimiento.getTipoMov().equals(TipoMov.ESPECIAL)) {
+
+			danioBase = ((((2 * 50) / 5 + 2) * movimiento.getPotencia() * ataqueEspecial / defensaEspecial) / 50 + 2)
+					* multiplicador;
+
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+				danioFinal = danioBase * rollDanio;
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+				danioFinal = ((danioBase * 3072) / 4096) * rollDanio;
+
+			}
+
+		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
+
+			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
+
+			} else if (movimiento.getBlancoMov().equals(BlancoMov.USUARIO)) {
+
+			}
+
+		}
+		return calcularDanio(movimiento);
+
+	}
 
 	public void recibirDanio(int cantidad) {
 		if (this.vidaActual > cantidad) {
@@ -138,19 +191,17 @@ public abstract class Personaje {
 		// Añade un estado a la colección aplicando reglas de acumulación.
 	}
 
-	public void procesarEstados(Estado estado) {
-		if (this.estadosActivos.contains(estado.getTipoEstado().equals(TipoEstado.DOT))) {
-			if (this.vidaActual > 0) {
-				this.vidaActual = this.vidaActual - estado.getPotenciaPorTurno();
+	public void procesarEstados() {
+		for (Estado e : estadosActivos) {
+			if (e.getTipoEstado().equals(TipoEstado.DOT)) {
+				this.recibirDanio(e.getPotenciaPorTurno());
 			}
-		}
-		if (this.estadosActivos.contains(estado.getTipoEstado().equals(TipoEstado.HOT))) {
-			if (this.vidaActual <= this.vidaMax) {
-				this.vidaActual = this.vidaActual + estado.getPotenciaPorTurno();
+			if (e.getTipoEstado().equals(TipoEstado.HOT)) {
+				this.curar(e.getPotenciaPorTurno());
 			}
-		}
-		if (this.estadosActivos.contains(estado.getTipoEstado().equals(TipoEstado.MODIFICADOR))) {
+			if (e.getTipoEstado().equals(TipoEstado.MODIFICADOR)) {
 
+			}
 		}
 		// Recorre estados activos, aplica su efecto por turno (y elimina expirados).
 	}
