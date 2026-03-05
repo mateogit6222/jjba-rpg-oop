@@ -154,7 +154,7 @@ public abstract class Personaje {
 		} else if (movimiento.getTipoMov().equals(TipoMov.ESTADO)) {
 
 			if (movimiento.getBlancoMov().equals(BlancoMov.ELEGIDO)) {
-
+				
 			} else if (movimiento.getBlancoMov().equals(BlancoMov.OP_ADY)) {
 
 			} else if (movimiento.getBlancoMov().equals(BlancoMov.USUARIO)) {
