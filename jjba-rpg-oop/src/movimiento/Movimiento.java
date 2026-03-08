@@ -9,8 +9,8 @@ public abstract class Movimiento {
 	protected BlancoMov blancoMov;
 	protected TipoMov tipoMov;
 	protected int potencia;
-	protected double precision;
-	protected int pp;
+	protected double precision; // 0.0 – 1.0 (ej: 1.0 = 100%, 0.85 = 85%)
+	protected int pp; // Usos restantes del movimiento
 	protected int costeEnergia;
 	protected String efectoSecundario;
 	protected int prioridad;
@@ -33,6 +33,10 @@ public abstract class Movimiento {
 	}
 
 	// Getters Movimiento
+
+	public String getNombre() {
+		return nombre;
+	}
 
 	public TipoMov getTipoMov() {
 		return tipoMov;
@@ -62,24 +66,42 @@ public abstract class Movimiento {
 		return prioridad;
 	}
 
+	public String getEfecto() {
+		return efecto;
+	}
+
+	public String getEfectoSecundario() {
+		return efectoSecundario;
+	}
+
 	// Funciones Movimiento
 
 	public boolean puedeUsarseMov(Personaje caster) {
 
-		if (this.pp > 0 && caster.getEnergiaActual() > 0) {
+		if (this.pp > 0 && caster.getEnergiaActual() >= this.costeEnergia) {
 			return true;
-		} else if (this.pp < 0) {
-			return false;
-		} else if (caster.getEnergiaActual() < 0) {
-			return false;
 		} else {
 			return false;
 		}
 		// Verifica que el personaje tiene pp y energiaActual suficiente.
 	}
 
-	public void usarMov(Personaje objetivo) {
+	public void usarMov(Personaje caster, Personaje objetivo) {
+		if (this.pp <= 0) {
+			System.out.println(nombre + " no tiene pp restantes.");
+			return; // ← detiene la ejecución aquí
+		}
+		if (caster.getEnergiaActual() < this.costeEnergia) {
+			System.out.println(caster.getNombre() + " no tiene energía suficiente (" + caster.getEnergiaActual() + "/"
+					+ this.costeEnergia + ").");
+			return; // ← detiene la ejecución aquí
+		}
+		this.pp--;
+		caster.gastarEnergia(this.costeEnergia);
+		ejecutarEfecto(caster, objetivo);
 
 	}
+
+	public abstract void ejecutarEfecto(Personaje caster, Personaje objetivo);
 
 }
