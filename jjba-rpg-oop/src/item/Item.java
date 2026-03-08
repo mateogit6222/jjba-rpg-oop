@@ -5,32 +5,42 @@ package item;
 public abstract class Item {
 	protected String nombre;
 	protected TipoItem tipoItem;
-	protected int potenciador; // Suma estadísticas: STAND_CA, STAND_LA, ITEM_POT
 	protected String efecto;
 
 	// Constructor Item
 
-	public Item(String nombre, TipoItem tipoItem, int potenciador, String efecto) {
+	public Item(String nombre, TipoItem tipoItem, String efecto) {
 		this.nombre = nombre;
 		this.tipoItem = tipoItem;
-		this.potenciador = potenciador;
 		this.efecto = efecto;
 	}
 
 	// Getters Item
 
+	public String getNombre() {
+		return nombre;
+	}
+
 	public TipoItem getTipoItem() {
 		return tipoItem;
 	}
 
-	public int getPotenciador() {
-		return potenciador;
+	public String getEfecto() {
+		return efecto;
 	}
 
 	// Funciones Item
 
 	public void infoItem() {
-		System.out.println("\t Características /n" + "nombre: " + this.nombre + "/n" + "tipoItem: " + this.tipoItem
-				+ "/n" + "efecto: " + this.efecto);
+		System.out.println("\tCaracterísticas\n" + "nombre: " + nombre + "\n" + "tipoItem: " + tipoItem + "\n"
+				+ "efecto: " + efecto);
 	}
+
+	@Override
+	public String toString() {
+		return nombre + " [" + tipoItem + "]";
+	}
+
+	public abstract void aplicarEfecto(personaje.Personaje portador);
+
 }
