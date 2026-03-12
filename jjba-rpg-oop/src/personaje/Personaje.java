@@ -1,11 +1,15 @@
 package personaje;
 
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
 import java.util.Random;
 
 import estado.Estado;
-import estado.TipoEstado;
+import estado.TipoStat;
 import item.Item;
 import movimiento.BlancoMov;
 import movimiento.Movimiento;
@@ -39,6 +43,10 @@ public abstract class Personaje {
 	protected Item item;
 	protected List<Movimiento> movimientos;
 
+	protected Map<TipoStat, Integer> nivelesStat;
+
+	private static final Random random = new Random();
+
 	// Constructor Personaje
 
 	public Personaje(String nombre, TipoPj tipopj, int vidaMax, int energiaMax, int ataque, int defensa,
@@ -57,12 +65,17 @@ public abstract class Personaje {
 		this.estaProtegido = estaProtegido;
 		this.item = item;
 
-		this.estadosActivos = new ArrayList();
-		this.movimientos = new ArrayList();
+		this.estadosActivos = new ArrayList<>();
+		this.movimientos = new ArrayList<>();
+
+		this.nivelesStat = new HashMap<>();
+		for (TipoStat stat : TipoStat.values()) {
+			nivelesStat.put(stat, 0); // Todos los niveles empiezan en 0
+		}
 
 		// Aplicar bonificaciones del ítem al equiparlo
 		if (item != null) {
-			item.aplicarEfecto(this);
+			item.aplicarEfecto();
 		}
 	}
 
@@ -128,6 +141,18 @@ public abstract class Personaje {
 		return movimientos;
 	}
 
+	public int getNivelStat(TipoStat stat) {
+		return nivelesStat.get(stat);
+	}
+
+	public Map<TipoStat, Integer> getNivelesStat() {
+		return Collections.unmodifiableMap(nivelesStat);
+	}
+
+	public double getMultiplicadorStat(TipoStat stat) {
+		return TipoStat.getMultiplicador(nivelesStat.get(stat));
+	}
+
 	// Setters Personaje
 
 	public void setVidaMax(int vidaMax) {
@@ -156,6 +181,10 @@ public abstract class Personaje {
 
 	public void setVelocidad(int velocidad) {
 		this.velocidad = velocidad;
+	}
+
+	public void setEstaProtegido(boolean estaProtegido) {
+		this.estaProtegido = estaProtegido;
 	}
 
 	// Funciones Personaje
@@ -189,15 +218,32 @@ public abstract class Personaje {
 				+ " EN]";
 	}
 
+	public void modificarNivelStat(TipoStat stat, int niveles) {
+		int nivelActual = nivelesStat.get(stat);
+		int nivelNuevo = Math.max(-6, Math.min(6, nivelActual + niveles));
+		nivelesStat.put(stat, nivelNuevo);
+
+		if (nivelNuevo == nivelActual) {
+			if (niveles > 0) {
+				System.out.println("¡El " + stat + " de " + nombre + " no puede subir más!");
+			} else {
+				System.out.println("¡El " + stat + " de " + nombre + " no puede bajar más!");
+			}
+		}
+	}
+
 	public void equiparItem(Item nuevoItem) {
 		this.item = nuevoItem;
 		if (nuevoItem != null) {
-			nuevoItem.aplicarEfecto(this);
+			nuevoItem.setPersonaje(this);
+			nuevoItem.aplicarEfecto();
+			// this.item = null;
 		}
 	}
 
 	public void aprenderMovimiento(Movimiento mov) {
 		this.movimientos.add(mov);
+		mov.setPersonaje(this);
 	}
 
 	public boolean gastarEnergia(int coste) {
@@ -206,17 +252,12 @@ public abstract class Personaje {
 			return true;
 		}
 		return false;
-
 		// Comprueba y descuenta energía si es posible.
 	}
 
 	public void recuperarEnergia(int cantidad) {
 		if (cantidad > 0) {
-			this.energiaActual = this.energiaActual + cantidad;
-
-			if (this.energiaActual > this.energiaMax) {
-				this.energiaActual = this.energiaMax;
-			}
+			this.energiaActual = Math.min(this.energiaActual + cantidad, this.energiaMax);
 		}
 	}
 
@@ -226,8 +267,6 @@ public abstract class Personaje {
 		if (movimiento.getTipoMov() == TipoMov.ESTADO) {
 			return 0;
 		}
-
-		Random random = new Random();
 
 		// Crítico: probabilidad ~4.167% (1/24), multiplicador x1.5
 		boolean esCritico = random.nextDouble() < 0.04167;
@@ -243,11 +282,11 @@ public abstract class Personaje {
 		int defStat;
 
 		if (movimiento.getTipoMov() == TipoMov.FISICO) {
-			atkStat = this.ataque;
-			defStat = defensor.getDefensa();
+			atkStat = (int) (this.ataque * getMultiplicadorStat(TipoStat.ATAQUE));
+			defStat = (int) (defensor.getDefensa() * defensor.getMultiplicadorStat(TipoStat.DEFENSA));
 		} else { // ESPECIAL
-			atkStat = this.ataqueEspecial;
-			defStat = defensor.getDefensaEspecial();
+			atkStat = (int) (this.ataqueEspecial * getMultiplicadorStat(TipoStat.ATAQUE_ESPECIAL));
+			defStat = (int) (defensor.getDefensaEspecial() * defensor.getMultiplicadorStat(TipoStat.DEFENSA_ESPECIAL));
 		}
 
 		// Fórmula base (nivel fijo = 50 como en el documento)
@@ -268,15 +307,20 @@ public abstract class Personaje {
 	}
 
 	public void recibirDanio(int cantidad) {
+		if (estaProtegido) {
+			System.out.println(nombre + " se ha protegido."); //
+			return;
+		}
+
 		if (cantidad > 0) {
-			this.vidaActual = this.vidaActual - cantidad;
+			this.vidaActual -= cantidad;
 
 			if (this.vidaActual < 0) {
 				this.vidaActual = 0;
 			}
 
 			if (this.vidaActual == 0) {
-				estadosActivos.clear();
+				System.out.println(nombre + " se ha debilitado."); //
 			}
 		}
 		// Actualiza vida y gestiona muerte.
@@ -284,22 +328,52 @@ public abstract class Personaje {
 
 	public void curar(int cantidad) {
 		if (cantidad > 0) {
-			this.vidaActual = this.vidaActual + cantidad;
-
-			if (this.vidaActual > this.vidaMax) {
-				this.vidaActual = this.vidaMax;
-
-			}
+			this.vidaActual = Math.min(this.vidaActual + cantidad, this.vidaMax);
 		}
 		// Suma vida sin superar vidaMax.
 	}
 
-	// public void aplicarEstado(Estado estado) {}
-	// Añade un estado a la colección aplicando reglas de acumulación.
+	public void aplicarEstado(Estado estado) {
+		if (!estaVivo())
+			return;
+
+		for (Estado e : estadosActivos) {
+			if (e.getNombre().equals(estado.getNombre())) {
+				if (!estado.isApilable()) {
+					System.out.println(nombre + " ya tiene el estado " + estado.getNombre() + ".");
+					return;
+				}
+			}
+		}
+
+		estadosActivos.add(estado);
+		estado.alAplicar(this);
+		// Añade un estado a la colección aplicando reglas de acumulación.
+	}
 
 	//
 
-	// public void procesarEstados() {}
-	// Recorre estados activos, aplica su efecto por turno (y elimina expirados).
+	public void procesarEstados() {
+		Iterator<Estado> it = estadosActivos.iterator();
+
+		while (it.hasNext()) {
+			Estado estado = it.next();
+			estado.porTurno(this);
+
+			if (!estaVivo()) {
+				estadosActivos.clear();
+				return;
+			}
+
+			if (estado.getTurnosRestantes() != Estado.DURACION_PERMANENTE) {
+				estado.setTurnosRestantes(estado.getTurnosRestantes() - 1);
+				if (estado.getTurnosRestantes() == 0) {
+					estado.alEliminar(this);
+					it.remove();
+				}
+			}
+		}
+		// Recorre estados activos, aplica su efecto por turno (y elimina expirados).
+	}
 
 }

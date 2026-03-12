@@ -1,11 +1,14 @@
 package item;
 
+import personaje.Personaje;
+
 //Atributos Item
 
 public abstract class Item {
 	protected String nombre;
 	protected TipoItem tipoItem;
 	protected String efecto;
+	protected Personaje portador;
 
 	// Constructor Item
 
@@ -29,6 +32,12 @@ public abstract class Item {
 		return efecto;
 	}
 
+	// Setters Item
+
+	public void setPersonaje(Personaje personaje) {
+		this.portador = personaje;
+	}
+
 	// Funciones Item
 
 	public void infoItem() {
@@ -41,6 +50,6 @@ public abstract class Item {
 		return nombre + " [" + tipoItem + "]";
 	}
 
-	public abstract void aplicarEfecto(personaje.Personaje portador);
+	public abstract void aplicarEfecto();
 
 }

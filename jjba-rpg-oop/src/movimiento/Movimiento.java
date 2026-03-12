@@ -1,5 +1,7 @@
 package movimiento;
 
+import java.util.Random;
+
 import personaje.Personaje;
 
 //Atributos Movimiento
@@ -15,6 +17,9 @@ public abstract class Movimiento {
 	protected String efectoSecundario;
 	protected int prioridad;
 	protected String efecto;
+	protected Personaje caster;
+
+	public static final double PRECISION_INFALIBLE = -1.0;
 
 	// Constructor Movimiento
 
@@ -74,9 +79,15 @@ public abstract class Movimiento {
 		return efectoSecundario;
 	}
 
+	// Setters Movimiento
+
+	public void setPersonaje(Personaje personaje) {
+		this.caster = personaje;
+	}
+
 	// Funciones Movimiento
 
-	public boolean puedeUsarseMov(Personaje caster) {
+	public boolean puedeUsarseMov() {
 
 		if (this.pp > 0 && caster.getEnergiaActual() >= this.costeEnergia) {
 			return true;
@@ -86,22 +97,28 @@ public abstract class Movimiento {
 		// Verifica que el personaje tiene pp y energiaActual suficiente.
 	}
 
-	public void usarMov(Personaje caster, Personaje objetivo) {
-		if (this.pp <= 0) {
-			System.out.println(nombre + " no tiene pp restantes.");
-			return; // ← detiene la ejecución aquí
+	public void usarMov(Personaje objetivo) {
+		if (!puedeUsarseMov()) {
+			if (this.pp <= 0)
+				System.out.println(nombre + " no tiene pp restantes.");
+			else
+				System.out.println(caster.getNombre() + " no tiene energía suficiente (" + caster.getEnergiaActual()
+						+ "/" + this.costeEnergia + ").");
+			return;
 		}
-		if (caster.getEnergiaActual() < this.costeEnergia) {
-			System.out.println(caster.getNombre() + " no tiene energía suficiente (" + caster.getEnergiaActual() + "/"
-					+ this.costeEnergia + ").");
-			return; // ← detiene la ejecución aquí
-		}
+
 		this.pp--;
 		caster.gastarEnergia(this.costeEnergia);
-		ejecutarEfecto(caster, objetivo);
 
+		if (this.precision != PRECISION_INFALIBLE && new Random().nextDouble() > this.precision) {
+			System.out.println(caster.getNombre() + " usó " + nombre + ", ¡pero falló!");
+			return;
+		}
+
+		System.out.println(caster.getNombre() + " usó " + nombre + ".");
+		ejecutarEfecto(objetivo);
 	}
 
-	public abstract void ejecutarEfecto(Personaje caster, Personaje objetivo);
+	public abstract void ejecutarEfecto(Personaje objetivo);
 
 }
