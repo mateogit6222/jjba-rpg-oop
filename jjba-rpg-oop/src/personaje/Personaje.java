@@ -15,7 +15,6 @@ import movimiento.BlancoMov;
 import movimiento.Movimiento;
 import movimiento.TipoMov;
 
-//TODO: Funciones para Estado.
 //TODO: Implementar más adelante debilidades y resistencias en calcularDanio y recibirDanio.
 
 //Atributos Personaje
@@ -194,7 +193,7 @@ public abstract class Personaje {
 		 * if (this.vidaActual > 0) { return true; } else { return false; }
 		 */
 
-		return this.vidaActual > 0 ? true : false; // Andrés no preguntes que me lo dijiste tú
+		return this.vidaActual > 0 ? true : false;
 		// Devuelve si el personaje puede actuar.
 	}
 
@@ -229,6 +228,24 @@ public abstract class Personaje {
 			} else {
 				System.out.println("¡El " + stat + " de " + nombre + " no puede bajar más!");
 			}
+		} else {
+			int diferencia = nivelNuevo - nivelActual;
+			String mensaje;
+
+			if (diferencia == 1)
+				mensaje = "subió";
+			else if (diferencia == 2)
+				mensaje = "subió mucho";
+			else if (diferencia >= 3)
+				mensaje = "subió muchísimo";
+			else if (diferencia == -1)
+				mensaje = "bajó";
+			else if (diferencia == -2)
+				mensaje = "bajó mucho";
+			else
+				mensaje = "bajó muchísimo";
+
+			System.out.println("¡El " + stat + " de " + nombre + " " + mensaje + "!");
 		}
 	}
 
@@ -328,9 +345,14 @@ public abstract class Personaje {
 
 	public void curar(int cantidad) {
 		if (cantidad > 0) {
+			for (Estado e : estadosActivos) {
+				if (e.getNombre().equals("anticura")) {
+					System.out.println(nombre + " tiene anticura activa. ¡No puede recuperar vida!");
+					return;
+				}
+			}
 			this.vidaActual = Math.min(this.vidaActual + cantidad, this.vidaMax);
 		}
-		// Suma vida sin superar vidaMax.
 	}
 
 	public void aplicarEstado(Estado estado) {
@@ -377,3 +399,4 @@ public abstract class Personaje {
 	}
 
 }
+
