@@ -102,6 +102,8 @@ public class Combate {
 				if (!equipoVivo(equipoJugador) || !equipoVivo(equipoEnemigo))
 					break;
 
+				atacante.setEstaProtegido(false);
+
 				boolean esJugador = equipoJugador.contains(atacante);
 				List<Personaje> rivales = esJugador ? equipoEnemigo : equipoJugador;
 				List<Personaje> aliados = esJugador ? equipoJugador : equipoEnemigo;
@@ -111,7 +113,6 @@ public class Combate {
 
 				ejecutarTurno(atacante, rivales, aliados, esJugador && !modoAuto);
 
-				atacante.setEstaProtegido(false);
 				resetearProteccionSiNoUsada(atacante);
 			}
 
