@@ -7,13 +7,19 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Subclase abstracta para usuarios de Stand. elegirAccion() pide entrada por
- * teclado al jugador.
+ * Clase abstracta que agrupa a los personajes jugables que poseen un Stand.
+ * Delega la toma de decisiones en combate directamente al jugador a través de
+ * la consola.
  */
 public abstract class UsuarioDeStand extends Personaje {
 
 	private static final Scanner scanner = new Scanner(System.in);
 
+	/**
+	 * Constructor base para un usuario de Stand. Inicializa al personaje con la
+	 * clasificación TipoPj.U_STAND. * (Mismos parámetros descriptivos que en la
+	 * clase Personaje).
+	 */
 	public UsuarioDeStand(String nombre, int vidaMax, int energiaMax, int ataque, int defensa, int ataqueEspecial,
 			int defensaEspecial, int velocidad, Item item) {
 		super(nombre, TipoPj.U_STAND, vidaMax, energiaMax, ataque, defensa, ataqueEspecial, defensaEspecial, velocidad,
@@ -28,8 +34,11 @@ public abstract class UsuarioDeStand extends Personaje {
 	}
 
 	/**
-	 * Muestra el menú de movimientos y devuelve el movimiento elegido. Devuelve
-	 * null si ningún movimiento es usable.
+	 * Muestra la interfaz de consola con los movimientos disponibles del Stand.
+	 * Detalla estadísticas clave de cada habilidad (PP, Coste, Prioridad) y asegura
+	 * mediante bucle de validación que se elija una acción ejecutable.
+	 *
+	 * @return El movimiento elegido y validado por el jugador.
 	 */
 	public Movimiento elegirMovimiento() {
 		List<Movimiento> movs = getMovimientos();
@@ -68,7 +77,13 @@ public abstract class UsuarioDeStand extends Personaje {
 	}
 
 	/**
-	 * Muestra los objetivos disponibles y devuelve el elegido.
+	 * Muestra por consola una lista interactiva de objetivos posibles y gestiona la
+	 * selección manual del jugador, validando rangos e inputs incorrectos.
+	 *
+	 * @param opciones La lista de personajes que pueden ser seleccionados.
+	 * @param etiqueta Contexto del objetivo (ej. "enemigo", "curación") para la
+	 *                 interfaz.
+	 * @return El personaje sobre el que recaerá el efecto del movimiento.
 	 */
 	public Personaje elegirObjetivo(List<Personaje> opciones, String etiqueta) {
 		System.out.println("\n  Elige objetivo (" + etiqueta + "):");

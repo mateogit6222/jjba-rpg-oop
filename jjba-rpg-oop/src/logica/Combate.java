@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Clase principal que gestiona el bucle de juego y la lógica de los combates.
+ * Actúa como controlador, coordinando los turnos, la selección de equipos, la
+ * toma de decisiones (humana o IA) y la resolución de efectos y daños.
+ */
 public class Combate {
 
 	private static final Scanner scanner = new Scanner(System.in);
@@ -18,6 +23,13 @@ public class Combate {
 	// PUNTO DE ENTRADA
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Método principal que lanza la aplicación. Muestra el menú inicial y permite
+	 * al jugador elegir entre el modo asistido, el modo automático o salir del
+	 * juego.
+	 *
+	 * @param args Argumentos de línea de comandos (no utilizados).
+	 */
 	public static void main(String[] args) {
 		mostrarTitulo();
 
@@ -54,6 +66,13 @@ public class Combate {
 	// FLUJO PRINCIPAL DEL COMBATE
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Inicia y gestiona el bucle principal de un combate completo. Controla la
+	 * inicialización de equipos, el orden de los turnos por ronda, la ejecución de
+	 * las acciones y la comprobación de las condiciones de victoria o derrota.
+	 *
+	 * @param modoAuto Si es true, la IA controlará también al equipo del jugador.
+	 */
 	private static void iniciarCombate(boolean modoAuto) {
 		System.out.println("\n═══════════════════════════════════════");
 		System.out.println(modoAuto ? "  MODO AUTOMÁTICO" : "  MODO ASISTIDO");
@@ -113,6 +132,14 @@ public class Combate {
 	// SELECCIÓN DE EQUIPOS
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Permite al jugador seleccionar su equipo de 3 personajes o los genera
+	 * aleatoriamente si el modo automático está activado.
+	 *
+	 * @param modoAuto Determina si la selección será manual (false) o aleatoria
+	 *                 (true).
+	 * @return Una lista con los 3 personajes que conforman el equipo aliado.
+	 */
 	private static List<Personaje> seleccionarEquipoJugador(boolean modoAuto) {
 		System.out.println("\n╔══════════════════════════════════════╗");
 		System.out.println("║    ELIGE TU EQUIPO (3 personajes)    ║");
@@ -140,6 +167,12 @@ public class Combate {
 		return equipo;
 	}
 
+	/**
+	 * Genera automáticamente el equipo rival compuesto por 3 personajes manejados
+	 * por la IA.
+	 *
+	 * @return Una lista con los 3 personajes que conforman el equipo enemigo.
+	 */
 	private static List<Personaje> seleccionarEquipoEnemigo() {
 		System.out.println("\n╔══════════════════════════════════════╗");
 		System.out.println("║    EQUIPO ENEMIGO (IA automática)    ║");
@@ -233,6 +266,14 @@ public class Combate {
 	// EFECTOS INICIALES
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Aplica habilidades pasivas o efectos de ítems que se activan justo al empezar
+	 * el combate. Por ejemplo, el ítem Luck & Pluck o la habilidad de revivir de
+	 * William Zeppeli.
+	 *
+	 * @param jugador  El equipo aliado.
+	 * @param enemigos El equipo rival.
+	 */
 	private static void aplicarEfectosIniciales(List<Personaje> jugador, List<Personaje> enemigos) {
 		for (Personaje p : jugador) {
 			if (p.getItem() instanceof LuckAndPluck) {
@@ -255,6 +296,18 @@ public class Combate {
 	// TURNO
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Orquesta el turno individual de un personaje en la ronda actual. Deriva la
+	 * ejecución a métodos más específicos dependiendo de si el atacante es un
+	 * enemigo (IA), un jugador humano, o un aliado en modo automático.
+	 *
+	 * @param atacante        El personaje que está realizando su turno.
+	 * @param rivales         La lista de personajes del equipo contrario.
+	 * @param aliados         La lista de personajes del mismo equipo que el
+	 *                        atacante.
+	 * @param esJugadorHumano true si el turno requiere input por consola del
+	 *                        usuario.
+	 */
 	private static void ejecutarTurno(Personaje atacante, List<Personaje> rivales, List<Personaje> aliados,
 			boolean esJugadorHumano) {
 		if (atacante instanceof HombreDelPilar) {
@@ -266,6 +319,16 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Ejecuta la lógica del turno para un personaje controlado por un jugador
+	 * humano. Pide por consola la selección de movimiento y el objetivo
+	 * correspondiente.
+	 *
+	 * @param atacante El personaje controlado por el jugador.
+	 * @param rivales  El equipo enemigo.
+	 * @param aliados  El equipo aliado (necesario para movimientos de soporte o
+	 *                 resurrección).
+	 */
 	private static void ejecutarTurnoHumano(Personaje atacante, List<Personaje> rivales, List<Personaje> aliados) {
 		Movimiento mov = null;
 		if (atacante instanceof UsuarioDeHamon) {
@@ -297,6 +360,15 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Ejecuta la lógica del turno para un aliado cuando el modo automático está
+	 * activado. La IA aliada prioriza el movimiento de mayor potencia y elige al
+	 * enemigo con menos vida.
+	 *
+	 * @param atacante El aliado controlado por la IA básica.
+	 * @param rivales  El equipo enemigo.
+	 * @param aliados  El equipo aliado.
+	 */
 	private static void ejecutarTurnoAutoJugador(Personaje atacante, List<Personaje> rivales, List<Personaje> aliados) {
 		Movimiento mejorMov = null;
 		int mayorPotencia = -1;
@@ -357,6 +429,13 @@ public class Combate {
 		mejorMov.usarMov(objetivo);
 	}
 
+	/**
+	 * Ejecuta el turno de los enemigos (Hombres del Pilar) basándose en su propia
+	 * IA interna.
+	 *
+	 * @param atacante El enemigo que está realizando su turno.
+	 * @param rivales  El equipo del jugador (objetivos potenciales).
+	 */
 	private static void ejecutarTurnoIA(HombreDelPilar atacante, List<Personaje> rivales) {
 		atacante.setRivalesVivos(vivosDeEquipo(rivales));
 		Movimiento mov = atacante.elegirMovimientoIA();
@@ -390,6 +469,17 @@ public class Combate {
 	// SELECCIÓN DE OBJETIVO (HUMANO)
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Gestiona la selección manual de un objetivo para un movimiento concreto.
+	 * Determina automáticamente los objetivos si el movimiento es de área o afecta
+	 * al propio usuario.
+	 *
+	 * @param atacante El personaje que usa el movimiento.
+	 * @param mov      El movimiento que se va a ejecutar.
+	 * @param rivales  Lista de enemigos disponibles para atacar.
+	 * @param aliados  Lista de aliados disponibles para movimientos de soporte.
+	 * @return El personaje objetivo seleccionado, o null si es un ataque de área.
+	 */
 	private static Personaje seleccionarObjetivoHumano(Personaje atacante, Movimiento mov, List<Personaje> rivales,
 			List<Personaje> aliados) {
 
@@ -446,6 +536,13 @@ public class Combate {
 	// ESTADOS
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Procesa los efectos recurrentes por turno (como veneno o quemaduras) para
+	 * todos los personajes vivos en el campo de batalla al final de la ronda.
+	 *
+	 * @param equipoA El equipo del jugador.
+	 * @param equipoB El equipo enemigo.
+	 */
 	private static void procesarEstadosTodos(List<Personaje> equipoA, List<Personaje> equipoB) {
 		for (Personaje p : equipoA) {
 			if (p.estaVivo() && !p.getEstadosActivos().isEmpty()) {
@@ -477,6 +574,16 @@ public class Combate {
 	// ORDEN DE TURNO
 	// ─────────────────────────────────────────────
 
+	/**
+	 * Une ambos equipos y los ordena de forma descendente según su estadística de
+	 * velocidad actual (incluyendo modificadores). En caso de empate, el orden se
+	 * decide de forma aleatoria.
+	 *
+	 * @param a Primer equipo a ordenar.
+	 * @param b Segundo equipo a ordenar.
+	 * @return Una lista unificada y ordenada de todos los personajes listos para
+	 *         actuar.
+	 */
 	private static List<Personaje> ordenarPorVelocidad(List<Personaje> a, List<Personaje> b) {
 		List<Personaje> todos = new ArrayList<>();
 		todos.addAll(a);

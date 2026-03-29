@@ -4,6 +4,10 @@ import personaje.Personaje;
 
 //Atributos Item
 
+/**
+ * Clase abstracta base para los objetos equipables del juego. Los ítems
+ * proporcionan ventajas pasivas o efectos únicos en combate al portador.
+ */
 public abstract class Item {
 	protected String nombre;
 	protected TipoItem tipoItem;
@@ -12,6 +16,13 @@ public abstract class Item {
 
 	// Constructor Item
 
+	/**
+	 * Constructor base para inicializar un objeto equipable.
+	 *
+	 * @param nombre   El nombre del ítem.
+	 * @param tipoItem La categoría a la que pertenece el ítem.
+	 * @param efecto   Descripción textual de la ventaja proporcionada.
+	 */
 	public Item(String nombre, TipoItem tipoItem, String efecto) {
 		this.nombre = nombre;
 		this.tipoItem = tipoItem;
@@ -50,6 +61,10 @@ public abstract class Item {
 		return nombre + " [" + tipoItem + "]";
 	}
 
+	/**
+	 * Lógica específica que se dispara cuando el ítem entra en funcionamiento.
+	 * Generalmente se llama cuando el ítem se equipa por primera vez.
+	 */
 	public abstract void aplicarEfecto();
 
 }

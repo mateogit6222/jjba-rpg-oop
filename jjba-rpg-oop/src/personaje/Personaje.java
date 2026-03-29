@@ -19,6 +19,11 @@ import movimiento.TipoMov;
 
 //Atributos Personaje
 
+/**
+ * Clase abstracta que representa la entidad base para todos los combatientes
+ * del juego. Gestiona los atributos principales, estadísticas, el inventario
+ * básico (ítem) y los estados alterados.
+ */
 public abstract class Personaje {
 	protected String nombre;
 	protected TipoPj tipopj;
@@ -48,6 +53,22 @@ public abstract class Personaje {
 
 	// Constructor Personaje
 
+	/**
+	 * Constructor principal para inicializar un Personaje.
+	 *
+	 * @param nombre          El nombre del personaje.
+	 * @param tipopj          El tipo o clasificación del personaje.
+	 * @param vidaMax         Puntos de vida máximos.
+	 * @param energiaMax      Puntos de energía máximos (equivalente a PP/Mana).
+	 * @param ataque          Estadística de ataque físico base.
+	 * @param defensa         Estadística de defensa física base.
+	 * @param ataqueEspecial  Estadística de ataque especial base.
+	 * @param defensaEspecial Estadística de defensa especial base.
+	 * @param velocidad       Estadística de velocidad para determinar el orden de
+	 *                        turno.
+	 * @param estaProtegido   Estado inicial de protección del personaje.
+	 * @param item            Ítem equipado inicialmente (puede ser null).
+	 */
 	public Personaje(String nombre, TipoPj tipopj, int vidaMax, int energiaMax, int ataque, int defensa,
 			int ataqueEspecial, int defensaEspecial, int velocidad, boolean estaProtegido, Item item) {
 		this.nombre = nombre;
@@ -188,6 +209,12 @@ public abstract class Personaje {
 
 	// Funciones Personaje
 
+	/**
+	 * Comprueba si el personaje tiene puntos de vida superiores a cero.
+	 *
+	 * @return true si el personaje puede seguir combatiendo, false si está
+	 *         debilitado.
+	 */
 	public boolean estaVivo() {
 		/*
 		 * if (this.vidaActual > 0) { return true; } else { return false; }
@@ -197,8 +224,16 @@ public abstract class Personaje {
 		// Devuelve si el personaje puede actuar.
 	}
 
+	/**
+	 * Método abstracto que define la lógica para la selección de acciones durante
+	 * un turno. Debe ser implementado por las subclases dependiendo de si es
+	 * controlado por IA o jugador.
+	 */
 	public abstract void elegirAccion();
 
+	/**
+	 * Muestra por consola la información detallada del personaje.
+	 */
 	public void infoPersonaje() {
 		System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" + "Nombre:         " + nombre + "\n" + "Tipo:           "
 				+ tipopj + "\n" + "Vida:           " + vidaActual + "/" + vidaMax + "\n" + "Energía:        "
@@ -217,6 +252,13 @@ public abstract class Personaje {
 				+ " EN]";
 	}
 
+	/**
+	 * Modifica los niveles de estadística en combate (buffs/debuffs) con un límite
+	 * de -6 a +6.
+	 *
+	 * @param stat    La estadística que se va a alterar.
+	 * @param niveles La cantidad de niveles a subir (positivo) o bajar (negativo).
+	 */
 	public void modificarNivelStat(TipoStat stat, int niveles) {
 		int nivelActual = nivelesStat.get(stat);
 		int nivelNuevo = Math.max(-6, Math.min(6, nivelActual + niveles));
@@ -278,6 +320,14 @@ public abstract class Personaje {
 		}
 	}
 
+	/**
+	 * Calcula el daño infligido a un objetivo utilizando las fórmulas estándar de
+	 * combate. Incluye probabilidad de golpe crítico y modificadores de área.
+	 *
+	 * @param movimiento El movimiento que se está ejecutando.
+	 * @param defensor   El personaje objetivo que recibirá el ataque.
+	 * @return La cantidad de daño calculada (mínimo 1).
+	 */
 	public int calcularDanio(Movimiento movimiento, Personaje defensor) {
 
 		// Los movimientos de estado no hacen daño directo
@@ -323,6 +373,12 @@ public abstract class Personaje {
 		return (int) Math.max(1, danioFinal); // Mínimo 1 de daño
 	}
 
+	/**
+	 * Resta la cantidad de daño especificada de la vida actual del personaje.
+	 * Gestiona el estado de protección y la notificación de debilitamiento.
+	 *
+	 * @param cantidad Puntos de vida a restar.
+	 */
 	public void recibirDanio(int cantidad) {
 		if (estaProtegido) {
 			System.out.println(nombre + " se ha protegido."); //
@@ -375,6 +431,10 @@ public abstract class Personaje {
 
 	//
 
+	/**
+	 * Procesa todos los estados alterados activos en el personaje al final de cada
+	 * turno. Resta la duración de los estados temporales y elimina los expirados.
+	 */
 	public void procesarEstados() {
 		Iterator<Estado> it = estadosActivos.iterator();
 
@@ -399,4 +459,3 @@ public abstract class Personaje {
 	}
 
 }
-

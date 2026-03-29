@@ -6,6 +6,10 @@ import personaje.Personaje;
 
 //Atributos Movimiento
 
+/**
+ * Clase abstracta base para todos los ataques y habilidades del juego. Define
+ * la potencia, precisión, coste y reglas de objetivo de cada acción.
+ */
 public abstract class Movimiento {
 	protected String nombre;
 	protected BlancoMov blancoMov;
@@ -19,10 +23,31 @@ public abstract class Movimiento {
 	protected String efecto;
 	protected Personaje caster;
 
+	/** Constante que indica que un movimiento nunca falla. */
 	public static final double PRECISION_INFALIBLE = -1.0;
 
 	// Constructor Movimiento
 
+	/**
+	 * Crea un nuevo movimiento con sus atributos definidos.
+	 *
+	 * @param nombre           El nombre de la técnica o ataque.
+	 * @param blancoMov        A quién afecta el movimiento (usuario, un rival,
+	 *                         todos los adyacentes, etc.).
+	 * @param tipoMov          Clasificación del movimiento (Físico, Especial o
+	 *                         Estado).
+	 * @param potencia         Poder base utilizado para el cálculo de daño (0 para
+	 *                         movimientos de estado).
+	 * @param precision        Probabilidad de acierto (0.0 a 1.0, o
+	 *                         PRECISION_INFALIBLE).
+	 * @param pp               Puntos de Poder (usos máximos).
+	 * @param costeEnergia     Cantidad de energía que el usuario debe gastar para
+	 *                         ejecutarlo.
+	 * @param efectoSecundario Descripción del efecto secundario, si lo tiene.
+	 * @param prioridad        Nivel de prioridad de ejecución (mayor prioridad se
+	 *                         ejecuta antes en la ronda).
+	 * @param efecto           Descripción general de lo que hace el movimiento.
+	 */
 	public Movimiento(String nombre, BlancoMov blancoMov, TipoMov tipoMov, int potencia, double precision, int pp,
 			int costeEnergia, String efectoSecundario, int prioridad, String efecto) {
 		this.nombre = nombre;
@@ -87,6 +112,12 @@ public abstract class Movimiento {
 
 	// Funciones Movimiento
 
+	/**
+	 * Comprueba si el movimiento puede ser ejecutado por el usuario actual.
+	 *
+	 * @return true si quedan usos (PP) y el usuario tiene suficiente energía, false
+	 *         en caso contrario.
+	 */
 	public boolean puedeUsarseMov() {
 
 		if (this.pp > 0 && caster.getEnergiaActual() >= this.costeEnergia) {
@@ -97,6 +128,13 @@ public abstract class Movimiento {
 		// Verifica que el personaje tiene pp y energiaActual suficiente.
 	}
 
+	/**
+	 * Intenta ejecutar el movimiento sobre el objetivo indicado, comprobando costes
+	 * y precisión. Si el movimiento acierta, invoca el método abstracto
+	 * ejecutarEfecto().
+	 *
+	 * @param objetivo El personaje que recibirá el efecto o daño del movimiento.
+	 */
 	public void usarMov(Personaje objetivo) {
 		if (!puedeUsarseMov()) {
 			if (this.pp <= 0)
@@ -119,6 +157,12 @@ public abstract class Movimiento {
 		ejecutarEfecto(objetivo);
 	}
 
+	/**
+	 * Lógica específica del efecto del movimiento. A implementar por las subclases
+	 * (ej. aplicar daño, curar, alterar estados).
+	 *
+	 * @param objetivo El personaje sobre el que recae el efecto.
+	 */
 	public abstract void ejecutarEfecto(Personaje objetivo);
 
 }
