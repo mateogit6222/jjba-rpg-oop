@@ -40,8 +40,9 @@ public abstract class UsuarioDeStand extends Personaje {
 		for (int i = 0; i < movs.size(); i++) {
 			Movimiento m = movs.get(i);
 			boolean usable = m.puedeUsarseMov();
-			System.out.printf("  [d] -22s PP: 2d  Energía: 2d  Prioridad: +d  sn", i + 1, m.getNombre(), m.getPp(),
-					m.getCosteEnergia(), m.getPrioridad(), usable ? "" : "(no usable)");
+			System.out.println("  [" + (i + 1) + "] " + m.getNombre() + "  PP: " + m.getPp() + "  Energía: "
+					+ m.getCosteEnergia() + "  Prioridad: " + (m.getPrioridad() >= 0 ? "+" : "") + m.getPrioridad()
+					+ (usable ? "" : "  (no usable)"));
 		}
 		System.out.println("══════════════════════════════");
 
@@ -72,7 +73,7 @@ public abstract class UsuarioDeStand extends Personaje {
 	public Personaje elegirObjetivo(List<Personaje> opciones, String etiqueta) {
 		System.out.println("\n  Elige objetivo (" + etiqueta + "):");
 		for (int i = 0; i < opciones.size(); i++) {
-			System.out.printf("  [d] sn", i + 1, opciones.get(i).toString());
+			System.out.println("  [" + (i + 1) + "] " + opciones.get(i).toString());
 		}
 		while (true) {
 			System.out.print("Elige (1-" + opciones.size() + "): ");
