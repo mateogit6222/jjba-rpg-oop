@@ -589,12 +589,17 @@ public class Combate {
 		List<Personaje> todos = new ArrayList<>();
 		todos.addAll(a);
 		todos.addAll(b);
+		
+		// 1. Mezclamos la lista primero para que los empates se resuelvan al azar de forma segura
+		java.util.Collections.shuffle(todos, rng);
+		
+		// 2. Ordenamos por velocidad
 		todos.sort((p1, p2) -> {
 			int v1 = (int) (p1.getVelocidad() * p1.getMultiplicadorStat(estado.TipoStat.VELOCIDAD));
 			int v2 = (int) (p2.getVelocidad() * p2.getMultiplicadorStat(estado.TipoStat.VELOCIDAD));
-			if (v2 != v1)
-				return Integer.compare(v2, v1);
-			return rng.nextBoolean() ? 1 : -1;
+			
+			// Comparamos de mayor a menor. Si v1 y v2 son idénticos, Integer.compare devuelve 0.
+			return Integer.compare(v2, v1);
 		});
 		return todos;
 	}
