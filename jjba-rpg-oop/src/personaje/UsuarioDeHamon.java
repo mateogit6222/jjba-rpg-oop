@@ -7,13 +7,19 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Subclase abstracta para usuarios de Hamon. elegirAccion() pide entrada por
- * teclado al jugador.
+ * Clase abstracta que agrupa a los personajes jugables que utilizan la técnica
+ * del Hamon. Delega la toma de decisiones en combate directamente al jugador a
+ * través de la consola.
  */
 public abstract class UsuarioDeHamon extends Personaje {
 
 	private static final Scanner scanner = new Scanner(System.in);
 
+	/**
+	 * Constructor base para un usuario de Hamon. Inicializa al personaje con la
+	 * clasificación TipoPj.U_HAMON. * (Mismos parámetros descriptivos que en la
+	 * clase Personaje).
+	 */
 	public UsuarioDeHamon(String nombre, int vidaMax, int energiaMax, int ataque, int defensa, int ataqueEspecial,
 			int defensaEspecial, int velocidad, Item item) {
 		super(nombre, TipoPj.U_HAMON, vidaMax, energiaMax, ataque, defensa, ataqueEspecial, defensaEspecial, velocidad,
@@ -25,6 +31,13 @@ public abstract class UsuarioDeHamon extends Personaje {
 		System.out.println("[" + nombre + "] elige una acción.");
 	}
 
+	/**
+	 * Muestra la interfaz de consola con los movimientos disponibles del personaje.
+	 * Detalla estadísticas clave de cada habilidad (PP, Coste, Prioridad) y valida
+	 * que la selección del jugador sea un movimiento ejecutable en este turno.
+	 *
+	 * @return El movimiento elegido y validado por el jugador.
+	 */
 	public Movimiento elegirMovimiento() {
 		List<Movimiento> movs = getMovimientos();
 		System.out.println("\n══════════════════════════════");
@@ -60,6 +73,16 @@ public abstract class UsuarioDeHamon extends Personaje {
 		}
 	}
 
+	/**
+	 * Muestra por consola una lista de objetivos posibles y gestiona la selección
+	 * del jugador.
+	 *
+	 * @param opciones La lista de personajes elegibles (pueden ser aliados o
+	 *                 enemigos).
+	 * @param etiqueta Una palabra descriptiva (ej. "enemigo", "aliado") para
+	 *                 clarificar el menú.
+	 * @return El personaje elegido como objetivo de la acción.
+	 */
 	public Personaje elegirObjetivo(List<Personaje> opciones, String etiqueta) {
 		System.out.println("\n  Elige objetivo (" + etiqueta + "):");
 		for (int i = 0; i < opciones.size(); i++) {
