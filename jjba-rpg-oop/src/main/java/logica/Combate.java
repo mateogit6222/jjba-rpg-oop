@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import persistencia.PartidaDAO;
+import persistencia.PersonajeDAO;
+
 /**
  * Clase principal que gestiona el bucle de juego y la lógica de los combates.
  * Actúa como controlador, coordinando los turnos, la selección de equipos, la
@@ -40,19 +43,23 @@ public class Combate {
 			System.out.println("╠══════════════════════════════╣");
 			System.out.println("║  [1] Modo asistido           ║");
 			System.out.println("║  [2] Modo automático         ║");
-			System.out.println("║  [3] Salir                   ║");
+			System.out.println("║  [3] Cargar partida          ║");
+			System.out.println("║  [4] Salir                   ║");
 			System.out.println("╚══════════════════════════════╝");
 			System.out.print("Elige: ");
 			String opcion = scanner.nextLine().trim();
 
 			switch (opcion) {
 			case "1":
-				iniciarCombate(false);
+				iniciarCombate(false, null);
 				break;
 			case "2":
-				iniciarCombate(true);
+				iniciarCombate(true, null);
 				break;
 			case "3":
+				menuCargarPartida();
+				break;
+			case "4":
 				salir = true;
 				System.out.println("¡Hasta la próxima, hijo de una gran persona!");
 				break;
@@ -73,21 +80,43 @@ public class Combate {
 	 *
 	 * @param modoAuto Si es true, la IA controlará también al equipo del jugador.
 	 */
-	private static void iniciarCombate(boolean modoAuto) {
+	private static void iniciarCombate(boolean modoAuto, Partida partidaCargada) {
 		System.out.println("\n═══════════════════════════════════════");
 		System.out.println(modoAuto ? "  MODO AUTOMÁTICO" : "  MODO ASISTIDO");
 		System.out.println("═══════════════════════════════════════\n");
 
-		List<Personaje> equipoJugador = seleccionarEquipoJugador(modoAuto);
-		List<Personaje> equipoEnemigo = seleccionarEquipoEnemigo();
+		List<Personaje> equipoJugador;
+		List<Personaje> equipoEnemigo;
+		int ronda = 1;
+
+		if (partidaCargada != null) {
+			// REANUDAR ESTADO PERSISTENTE
+			PersonajeDAO pDAO = new PersonajeDAO();
+			equipoJugador = pDAO.cargarPersonajes(partidaCargada.getIdPartida(), "JUGADOR");
+			equipoEnemigo = pDAO.cargarPersonajes(partidaCargada.getIdPartida(), "ENEMIGO");
+			ronda = partidaCargada.getRondaActual();
+			System.out.println("[SISTEMA] Reanudando combate desde la Ronda " + ronda);
+		} else {
+			// PARTIDA NUEVA
+			equipoJugador = seleccionarEquipoJugador(modoAuto);
+			equipoEnemigo = seleccionarEquipoEnemigo();
+		}
 
 		aplicarEfectosIniciales(equipoJugador, equipoEnemigo);
 
 		System.out.println("\n¡Que empiece el combate!");
 		pausa(modoAuto);
 
-		int ronda = 1;
 		while (equipoVivo(equipoJugador) && equipoVivo(equipoEnemigo)) {
+
+			if (!modoAuto) {
+				System.out.print("\n¿Deseas guardar la partida antes de la Ronda " + ronda + "? (s/n): ");
+				String respuesta = scanner.nextLine().trim().toLowerCase();
+				if (respuesta.equals("s")) {
+					guardarProgreso(ronda, modoAuto, equipoJugador, equipoEnemigo);
+				}
+			}
+
 			System.out.println("\n╔══════════════════════════════════════╗");
 			System.out.println("║            RONDA " + ronda + "                   ║");
 			System.out.println("╚══════════════════════════════════════╝");
@@ -741,4 +770,46 @@ public class Combate {
 			scanner.nextLine();
 		}
 	}
+
+	/**
+	 * Guarda el estado actual del combate en la base de datos.
+	 */
+	private static void guardarProgreso(int ronda, boolean modoAuto, List<Personaje> jugador, List<Personaje> enemigo) {
+		System.out.println("\n[SISTEMA] Guardando partida...");
+
+		// 1. Instanciamos los DAOs
+		PartidaDAO partidaDAO = new PartidaDAO();
+		PersonajeDAO personajeDAO = new PersonajeDAO();
+
+		// 2. Definimos IDs temporales para Jugador y Dificultad
+		// (En el futuro estos vendrán de tu sistema de login y menú de opciones)
+		int idJugadorLogueado = 1;
+		int idDificultadSeleccionada = 2; // Ejemplo: Normal
+
+		// 3. Guardamos la cabecera de la Partida
+		int idPartida = partidaDAO.guardarNuevaPartida(idJugadorLogueado, idDificultadSeleccionada, ronda, modoAuto);
+
+		if (idPartida != -1) {
+			// 4. Guardamos los personajes de ambos bandos vinculados a ese ID de partida
+			personajeDAO.guardarPersonajes(idPartida, jugador, "JUGADOR");
+			personajeDAO.guardarPersonajes(idPartida, enemigo, "ENEMIGO");
+
+			System.out.println("¡Progreso guardado correctamente en la base de datos!");
+		} else {
+			System.err.println("Error: No se pudo conectar con la base de datos para guardar.");
+		}
+	}
+
+	private static void menuCargarPartida() {
+		System.out.print("\nIntroduce el ID de la partida a cargar: ");
+		int id = leerEntero(1, 9999);
+
+		PartidaDAO pDAO = new PartidaDAO();
+		Partida partidaGuardada = pDAO.cargarPartida(id);
+
+		if (partidaGuardada != null) {
+			iniciarCombate(partidaGuardada.isModoAuto(), partidaGuardada);
+		}
+	}
+
 }
