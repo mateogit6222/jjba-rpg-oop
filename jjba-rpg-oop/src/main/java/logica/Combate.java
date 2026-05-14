@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import persistencia.DificultadDAO;
+import persistencia.JugadorDAO;
 import persistencia.PartidaDAO;
 import persistencia.PersonajeDAO;
 
@@ -85,6 +87,11 @@ public class Combate {
 		System.out.println(modoAuto ? "  MODO AUTOMÁTICO" : "  MODO ASISTIDO");
 		System.out.println("═══════════════════════════════════════\n");
 
+		JugadorDAO jugadorDAO = new JugadorDAO();
+		DificultadDAO dificultadDAO = new DificultadDAO();
+		Jugador jugadorActual = null;
+		Dificultad dificultadActual = null;
+
 		List<Personaje> equipoJugador;
 		List<Personaje> equipoEnemigo;
 		int ronda = 1;
@@ -95,11 +102,20 @@ public class Combate {
 			equipoJugador = pDAO.cargarPersonajes(partidaCargada.getIdPartida(), "JUGADOR");
 			equipoEnemigo = pDAO.cargarPersonajes(partidaCargada.getIdPartida(), "ENEMIGO");
 			ronda = partidaCargada.getRondaActual();
+
+			jugadorActual = jugadorDAO.cargarJugador(partidaCargada.getIdJugador());
+			dificultadActual = dificultadDAO.cargarDificultad(partidaCargada.getIdDificultad());
+
 			System.out.println("[SISTEMA] Reanudando combate desde la Ronda " + ronda);
 		} else {
 			// PARTIDA NUEVA
+			jugadorActual = jugadorDAO.cargarJugador(1);
+			dificultadActual = dificultadDAO.cargarDificultad(2);
+
 			equipoJugador = seleccionarEquipoJugador(modoAuto);
 			equipoEnemigo = seleccionarEquipoEnemigo();
+
+			aplicarModificadoresDificultad(equipoEnemigo, dificultadActual);
 		}
 
 		aplicarEfectosIniciales(equipoJugador, equipoEnemigo);
@@ -112,8 +128,9 @@ public class Combate {
 			if (!modoAuto) {
 				System.out.print("\n¿Deseas guardar la partida antes de la Ronda " + ronda + "? (s/n): ");
 				String respuesta = scanner.nextLine().trim().toLowerCase();
+				// Cambia la llamada original por esta:
 				if (respuesta.equals("s")) {
-					guardarProgreso(ronda, modoAuto, equipoJugador, equipoEnemigo);
+					guardarProgreso(ronda, modoAuto, equipoJugador, equipoEnemigo, jugadorActual, dificultadActual);
 				}
 			}
 
@@ -156,6 +173,18 @@ public class Combate {
 		}
 
 		mostrarResumenFinal(equipoJugador, equipoEnemigo, ronda);
+
+		if (equipoVivo(equipoJugador) && jugadorActual != null && dificultadActual != null) {
+			int experienciaBaseTotal = 300; // Experiencia base por derrotar a los 3 Hombres del Pilar
+			int experienciaFinal = (int) (experienciaBaseTotal * dificultadActual.getMultiplicadorExp());
+
+			System.out.println("\n[RECOMPENSA] ¡Tu equipo ha ganado " + experienciaFinal + " EXP!");
+			jugadorActual.ganarExperiencia(experienciaFinal);
+
+			// Guardamos el nuevo nivel y experiencia en la base de datos
+			jugadorDAO.actualizarProgreso(jugadorActual);
+		}
+
 	}
 
 	// ─────────────────────────────────────────────
@@ -772,25 +801,24 @@ public class Combate {
 	}
 
 	/**
-	 * Guarda el estado actual del combate en la base de datos.
+	 * Guarda el estado actual del combate en la base de datos asociando las
+	 * entidades activas.
 	 */
-	private static void guardarProgreso(int ronda, boolean modoAuto, List<Personaje> jugador, List<Personaje> enemigo) {
+	private static void guardarProgreso(int ronda, boolean modoAuto, List<Personaje> jugador, List<Personaje> enemigo,
+			Jugador jugadorActual, Dificultad dificultadActual) {
 		System.out.println("\n[SISTEMA] Guardando partida...");
 
-		// 1. Instanciamos los DAOs
 		PartidaDAO partidaDAO = new PartidaDAO();
 		PersonajeDAO personajeDAO = new PersonajeDAO();
 
-		// 2. Definimos IDs temporales para Jugador y Dificultad
-		// (En el futuro estos vendrán de tu sistema de login y menú de opciones)
-		int idJugadorLogueado = 1;
-		int idDificultadSeleccionada = 2; // Ejemplo: Normal
+		// Extraemos los IDs reales de los objetos cargados en memoria
+		int idJugador = (jugadorActual != null) ? jugadorActual.getIdJugador() : 1;
+		int idDificultad = (dificultadActual != null) ? dificultadActual.getIdDificultad() : 2;
 
-		// 3. Guardamos la cabecera de la Partida
-		int idPartida = partidaDAO.guardarNuevaPartida(idJugadorLogueado, idDificultadSeleccionada, ronda, modoAuto);
+		// Guardamos la cabecera de la Partida con los datos correctos
+		int idPartida = partidaDAO.guardarNuevaPartida(idJugador, idDificultad, ronda, modoAuto);
 
 		if (idPartida != -1) {
-			// 4. Guardamos los personajes de ambos bandos vinculados a ese ID de partida
 			personajeDAO.guardarPersonajes(idPartida, jugador, "JUGADOR");
 			personajeDAO.guardarPersonajes(idPartida, enemigo, "ENEMIGO");
 
@@ -810,6 +838,25 @@ public class Combate {
 		if (partidaGuardada != null) {
 			iniciarCombate(partidaGuardada.isModoAuto(), partidaGuardada);
 		}
+	}
+
+	/**
+	 * Aplica de forma limpia y desacoplada los modificadores de dificultad sobre
+	 * los enemigos.
+	 */
+	private static void aplicarModificadoresDificultad(List<Personaje> enemigos, Dificultad dificultadActual) {
+		if (dificultadActual == null)
+			return;
+
+		for (Personaje enemigo : enemigos) {
+			int nuevaVidaMax = (int) (enemigo.getVidaMax() * dificultadActual.getMultiplicadorVida());
+			enemigo.setVidaMax(nuevaVidaMax);
+			enemigo.setVidaActual(nuevaVidaMax);
+
+			enemigo.setAtaque((int) (enemigo.getAtaque() * dificultadActual.getMultiplicadorDanio()));
+			enemigo.setAtaqueEspecial((int) (enemigo.getAtaqueEspecial() * dificultadActual.getMultiplicadorDanio()));
+		}
+		System.out.println("[SISTEMA] Modificadores de dificultad aplicados al equipo rival.");
 	}
 
 }

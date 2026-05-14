@@ -175,6 +175,10 @@ public abstract class Personaje {
 
 	// Setters Personaje
 
+	public void setVidaActual(int vidaActual) {
+		this.vidaActual = Math.min(vidaActual, this.vidaMax);
+	}
+
 	public void setVidaMax(int vidaMax) {
 		this.vidaMax = vidaMax;
 	}
